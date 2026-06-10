@@ -214,7 +214,12 @@ const CATEGORIES = [
 ===================================================================== */
 const ALL = ['tri','rrace','camp'];           // travel events
 const RACES = ['tri','rrace'];
-let _n = 0; const I = (name,cat,ev)=>({id:'d'+(_n++), name, cat, ev});
+/* Stable IDs derived from the item name — you can add, remove, or reorder
+   items below without breaking anyone's saved checkmarks. Just don't RENAME
+   an existing item (that gives it a new ID); add the new wording as a new
+   item instead, or accept that its checks reset. */
+const slug = s => 'd-' + s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const I = (name,cat,ev)=>({id:slug(name), name, cat, ev});
 
 const DEFAULT_ITEMS = [
   /* ---- FOOD ---- */
