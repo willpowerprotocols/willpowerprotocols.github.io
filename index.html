@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10100e">
+<meta name="description" content="Free tools for endurance athletes from Will Power Protocols — science-backed longevity and performance for athletes 50+.">
+<title>Will Power Protocols — Free Tools</title>
+<style>
+:root{
+  --bg:#10100e; --panel:#1a1a16; --panel2:#22221c; --line:#33332a;
+  --ink:#e8e4d8; --ink-dim:#8f8b7d; --ink-faint:#5c5950;
+  --green:#7da832; --green-deep:#465f1c;
+  --amber:#d99a2b;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;
+}
+.wrap{width:100%;max-width:560px;margin:0 auto;padding:0 18px;flex:1}
+
+header{padding:54px 0 10px;text-align:center}
+.eyebrow{
+  font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--green);font-weight:700;margin-bottom:14px;
+}
+h1{
+  font-size:1.7rem;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:800;line-height:1.25;
+}
+h1 .stripe{color:var(--green)}
+.sub{margin-top:12px;color:var(--ink-dim);font-size:.92rem;line-height:1.55}
+
+.section-label{
+  margin:38px 0 12px;font-size:.7rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-faint);font-weight:700;
+  display:flex;align-items:center;gap:12px;
+}
+.section-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.tool{
+  display:block;text-decoration:none;color:inherit;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin-bottom:12px;transition:border-color .15s;
+}
+.tool:hover,.tool:active{border-color:var(--green)}
+.tool-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.tool h2{font-size:1rem;font-weight:800;letter-spacing:.04em}
+.badge{
+  font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--bg);background:var(--green);border-radius:4px;padding:3px 7px;white-space:nowrap;
+}
+.tool p{color:var(--ink-dim);font-size:.85rem;line-height:1.5}
+.tool .go{
+  margin-top:12px;font-size:.78rem;font-weight:700;letter-spacing:.06em;
+  color:var(--green);text-transform:uppercase;
+}
+
+.coming{
+  border:1px dashed var(--line);border-radius:12px;padding:16px 18px;
+  color:var(--ink-faint);font-size:.83rem;text-align:center;
+}
+
+footer{
+  margin-top:48px;padding:22px 18px calc(26px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--line);text-align:center;
+}
+footer .brand{
+  font-size:.74rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-dim);margin-bottom:8px;
+}
+footer .brand b{color:var(--green)}
+footer a.support{
+  display:inline-block;background:var(--panel);border:1px solid var(--green);
+  color:var(--ink);text-decoration:none;border-radius:20px;
+  padding:8px 16px;font-size:.78rem;font-weight:700;margin-top:2px;
+}
+footer .motto{
+  margin-top:14px;font-size:.66rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Free Tools</div>
+    <h1>Will<span class="stripe"> Power </span>Protocols</h1>
+    <p class="sub">Practical, no-nonsense tools for endurance athletes.
+    No accounts, no ads, no app store. Open on your phone, add to your
+    home screen, and they work like real apps — even offline.</p>
+  </header>
+
+  <div class="section-label">Tools</div>
+
+  <a class="tool" href="packinglist/">
+    <div class="tool-top">
+      <h2>Battle Ready — Packing Checklist</h2>
+      <span class="badge">New</span>
+    </div>
+    <p>One checklist for every event: triathlon, running race, training camp,
+    or a single swim, bike, or run day. Four-state checkmarks (packed,
+    pack-in-the-morning, N/A), fully customizable, and it remembers your
+    progress between sessions — pack over several days without losing your place.</p>
+    <div class="go">Open the checklist →</div>
+  </a>
+
+  <div class="coming">More tools in the works. Battle hard.</div>
+</div>
+
+<footer>
+  <div class="brand">Will <b>Power</b> Protocols</div>
+  <a class="support" href="https://buymeacoffee.com/willpowerprotocols" target="_blank" rel="noopener">☕ Support these free tools</a>
+  <div class="motto">Battle Hard</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#10100e">
+<title>Battle Ready — Packing Checklist</title>
+<style>
+:root{
+  --bg:#10100e; --panel:#1a1a16; --panel2:#22221c; --line:#33332a;
+  --ink:#e8e4d8; --ink-dim:#8f8b7d; --ink-faint:#5c5950;
+  --green:#7da832; --green-deep:#465f1c;
+  --amber:#d99a2b; --amber-deep:#6b4c12;
+  --red:#b4543c;
+  --radius:10px;
+  font-size:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding-bottom:90px;
+}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+
+/* ===== Header ===== */
+header{
+  position:sticky; top:0; z-index:20; background:var(--bg);
+  border-bottom:1px solid var(--line); padding:12px 14px 0;
+}
+.title-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+h1{font-size:1.05rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+h1 .stripe{color:var(--green)}
+#progress-label{font-size:.8rem;color:var(--ink-dim);letter-spacing:.05em}
+.progress-track{height:5px;background:var(--panel2);border-radius:3px;margin:10px 0 12px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:var(--green);border-radius:3px;transition:width .25s ease}
+.progress-fill.done{background:var(--green);box-shadow:0 0 8px var(--green)}
+
+/* event tabs */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex:0 0 auto;border:1px solid var(--line);background:var(--panel);
+  color:var(--ink-dim);border-radius:20px;padding:8px 14px;font-size:.85rem;
+  font-weight:600;letter-spacing:.03em;cursor:pointer;white-space:nowrap;
+}
+.tab.active{background:var(--green-deep);border-color:var(--green);color:var(--ink)}
+
+/* ===== Legend ===== */
+.legend{display:flex;gap:14px;padding:10px 14px 2px;font-size:.72rem;color:var(--ink-dim);flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;border:1.5px solid var(--ink-faint)}
+.dot.g{background:var(--green);border-color:var(--green)}
+.dot.a{background:var(--amber);border-color:var(--amber)}
+.dot.n{background:var(--ink-faint);border-color:var(--ink-faint)}
+
+/* ===== Categories ===== */
+main{padding:8px 12px}
+.cat{margin-bottom:10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);overflow:hidden}
+.cat-head{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:12px 14px;cursor:pointer;user-select:none;
+}
+.cat-head h2{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);font-weight:700}
+.cat-meta{display:flex;align-items:center;gap:10px;font-size:.75rem;color:var(--ink-dim)}
+.cat-count.complete{color:var(--green);font-weight:700}
+.chev{transition:transform .2s;color:var(--ink-faint)}
+.cat.collapsed .chev{transform:rotate(-90deg)}
+.cat.collapsed .items{display:none}
+
+/* ===== Items ===== */
+.item{
+  display:flex;align-items:center;gap:12px;padding:13px 14px;
+  border-top:1px solid var(--line);cursor:pointer;min-height:52px;user-select:none;
+}
+.item:active{background:var(--panel2)}
+.state{
+  flex:0 0 30px;height:30px;border-radius:50%;
+  border:2px solid var(--ink-faint);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.62rem;font-weight:800;color:var(--bg);letter-spacing:.02em;
+}
+.item[data-state="packed"] .state{background:var(--green);border-color:var(--green)}
+.item[data-state="am"] .state{background:var(--amber);border-color:var(--amber)}
+.item[data-state="na"] .state{background:var(--ink-faint);border-color:var(--ink-faint);color:var(--panel)}
+.item-name{flex:1;font-size:.95rem;line-height:1.3}
+.item[data-state="packed"] .item-name{color:var(--ink-dim)}
+.item[data-state="na"] .item-name{color:var(--ink-faint);text-decoration:line-through}
+.item[data-state="am"] .item-name{color:var(--ink)}
+.am-tag{font-size:.65rem;color:var(--amber);font-weight:700;letter-spacing:.08em}
+.del-btn{
+  flex:0 0 auto;display:none;background:none;border:1px solid var(--red);
+  color:var(--red);border-radius:6px;padding:6px 10px;font-size:.75rem;font-weight:700;cursor:pointer;
+}
+body.editing .del-btn{display:block}
+body.editing .item{cursor:default}
+
+/* add item row */
+.add-row{display:none;border-top:1px solid var(--line);padding:10px 14px;gap:8px}
+body.editing .add-row{display:flex}
+.add-row input{
+  flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+  color:var(--ink);padding:10px 12px;font-size:.9rem;
+}
+.add-row input::placeholder{color:var(--ink-faint)}
+.add-row button{
+  background:var(--green-deep);border:1px solid var(--green);color:var(--ink);
+  border-radius:8px;padding:0 16px;font-weight:700;cursor:pointer;font-size:.85rem;
+}
+
+/* ===== Bottom bar ===== */
+.toolbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:20;
+  display:flex;gap:8px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(transparent,var(--bg) 30%);
+}
+.toolbar button{
+  flex:1;padding:13px 8px;border-radius:var(--radius);font-size:.8rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+  background:var(--panel);border:1px solid var(--line);color:var(--ink-dim);
+}
+.toolbar button.primary{background:var(--green-deep);border-color:var(--green);color:var(--ink)}
+body.editing #edit-btn{background:var(--amber-deep);border-color:var(--amber);color:var(--ink)}
+
+/* misc */
+.empty-note{padding:16px 14px;color:var(--ink-faint);font-size:.85rem;border-top:1px solid var(--line)}
+.toast{
+  position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);
+  background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+  padding:10px 18px;border-radius:24px;font-size:.85rem;opacity:0;pointer-events:none;
+  transition:all .25s;z-index:30;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== Brand footer ===== */
+.brand-footer{
+  margin:28px 12px 8px;padding:18px 16px;text-align:center;
+  border-top:1px solid var(--line);
+}
+.brand-footer .brand{
+  font-size:.78rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-dim);margin-bottom:6px;
+}
+.brand-footer .brand b{color:var(--green)}
+.brand-footer .tagline{font-size:.74rem;color:var(--ink-faint);margin-bottom:12px}
+.brand-footer a.support{
+  display:inline-block;background:var(--panel);border:1px solid var(--green);
+  color:var(--ink);text-decoration:none;border-radius:20px;
+  padding:9px 18px;font-size:.8rem;font-weight:700;letter-spacing:.04em;
+}
+.brand-footer a.support:active{background:var(--green-deep)}
+.brand-footer .motto{
+  margin-top:14px;font-size:.68rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-row">
+    <h1>Battle<span class="stripe"> // </span>Ready</h1>
+    <span id="progress-label" class="mono">0 / 0</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+
+<div class="legend">
+  <span><i class="dot"></i> To pack</span>
+  <span><i class="dot g"></i> Packed</span>
+  <span><i class="dot a"></i> Pack in AM</span>
+  <span><i class="dot n"></i> N/A</span>
+</div>
+
+<main id="main"></main>
+
+<footer class="brand-footer">
+  <div class="brand">Will <b>Power</b> Protocols</div>
+  <div class="tagline">Science-backed longevity &amp; performance for athletes 50+</div>
+  <a class="support" href="https://buymeacoffee.com/willpowerprotocols" target="_blank" rel="noopener">☕ Found this useful? Support the project</a>
+  <div class="motto">Battle Hard</div>
+</footer>
+
+<div class="toolbar">
+  <button id="edit-btn">Edit items</button>
+  <button id="restore-btn">Restore removed</button>
+  <button id="reset-btn" class="primary">New trip</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   EVENTS — which checklist profiles exist
+===================================================================== */
+const EVENTS = [
+  {key:'tri',   label:'Triathlon'},
+  {key:'rrace', label:'Running Race'},
+  {key:'camp',  label:'Training Camp'},
+  {key:'swim',  label:'Swim Day'},
+  {key:'bike',  label:'Bike Day'},
+  {key:'run',   label:'Run Day'},
+];
+
+const CATEGORIES = [
+  'Food','Supplements & Nutrition','Swim','Bike','Run',
+  'Race Logistics','Clothes','Household','Lodging','Misc'
+];
+
+/* =====================================================================
+   MASTER ITEM LIST — merged & deduped from all spreadsheets.
+   ev: which event profiles the item appears in.
+===================================================================== */
+const ALL = ['tri','rrace','camp'];           // travel events
+const RACES = ['tri','rrace'];
+let _n = 0; const I = (name,cat,ev)=>({id:'d'+(_n++), name, cat, ev});
+
+const DEFAULT_ITEMS = [
+  /* ---- FOOD ---- */
+  I('Dates','Food',ALL),
+  I('Rice cakes','Food',ALL),
+  I('Jasmine rice','Food',ALL),
+  I('Turkey sandwich','Food',ALL),
+  I('Mustard','Food',ALL),
+  I('Salt','Food',ALL),
+  I('Sourdough bagels','Food',ALL),
+  I('Bananas','Food',ALL),
+  I('Kefir','Food',ALL),
+  I('Greek yogurt','Food',ALL),
+  I('Blueberries','Food',ALL),
+  I('Honey','Food',ALL),
+  I('Maple syrup / waffle packets','Food',ALL),
+  I('Ice pack','Food',ALL),
+  I('Water (gallons of spring water)','Food',ALL),
+
+  /* ---- SUPPLEMENTS & NUTRITION ---- */
+  I('Beet capsules','Supplements & Nutrition',ALL),
+  I('Shot Bloks','Supplements & Nutrition',[...ALL,'bike','run']),
+  I('Precision Hydration mix','Supplements & Nutrition',[...ALL,'bike','run']),
+  I('PH 1500 tablets','Supplements & Nutrition',ALL),
+  I('Maurten gels','Supplements & Nutrition',[...ALL,'run']),
+  I('Supplement trays (filled)','Supplements & Nutrition',ALL),
+  I('Salt tablets','Supplements & Nutrition',[...ALL,'bike','run']),
+  I('Untapped packets','Supplements & Nutrition',RACES),
+  I('KetoneIQ','Supplements & Nutrition',RACES),
+  I('Collagen packets','Supplements & Nutrition',ALL),
+  I('Pure green drinks','Supplements & Nutrition',ALL),
+
+  /* ---- SWIM ---- */
+  I('Wetsuit','Swim',['tri','camp','swim']),
+  I('Goggles — two pair','Swim',['tri','camp','swim']),
+  I('Body Glide','Swim',['tri','camp','swim']),
+  I('Vaseline','Swim',['tri','camp','swim']),
+  I('Swim cap','Swim',['tri','camp','swim']),
+  I('Lava pants / shorts','Swim',['camp','swim']),
+  I('Swim booties','Swim',['tri','camp','swim']),
+  I('Towel','Swim',['tri','camp','swim']),
+  I('Extra T-shirt for after','Swim',['swim']),
+
+  /* ---- BIKE ---- */
+  I('Bike','Bike',['tri','camp','bike']),
+  I('Helmet','Bike',['tri','camp','bike']),
+  I('Bike shoes','Bike',['tri','camp','bike']),
+  I('Bike computer (CHARGED)','Bike',['tri','camp','bike']),
+  I('Hydration bottles — bike','Bike',['tri','camp','bike']),
+  I('Bike glasses (clear + dark)','Bike',['tri','camp','bike']),
+  I('Bike shorts / jersey','Bike',['tri','camp','bike']),
+  I('Bike gloves','Bike',['camp','bike']),
+  I('Heart rate monitor','Bike',['tri','camp','bike','run']),
+  I('Tire pump — fill tires','Bike',['tri','camp','bike']),
+  I('Safety kit: 2× CO2, pump, spare tube','Bike',['tri','camp','bike']),
+  I('Chain lube — check chain, tighten bolts','Bike',['tri','camp','bike']),
+  I('Pedal wrench / Allen wrenches','Bike',['tri','camp']),
+
+  /* ---- RUN ---- */
+  I('Running shoes / socks','Run',['tri','rrace','camp','run']),
+  I('Nip guards','Run',['tri','rrace','camp','run']),
+  I('Race belt','Run',RACES),
+  I('Shorts and shirt','Run',['tri','rrace','camp','run']),
+  I('Run glasses','Run',['tri','rrace','camp','run']),
+  I('Visor','Run',['tri','rrace','camp','run']),
+  I('Garmin watch (CHARGED)','Run',['tri','rrace','camp','run','swim','bike']),
+  I('Hand flask','Run',['rrace','camp','run']),
+  I('Headband / sweat band','Run',['tri','rrace','run']),
+
+  /* ---- RACE LOGISTICS ---- */
+  I('USAT card','Race Logistics',['tri']),
+  I('License / ID','Race Logistics',RACES),
+  I('Race confirmation + packet pickup info','Race Logistics',RACES),
+  I('Parking confirmation from email','Race Logistics',RACES),
+  I('Stage race kit night before','Race Logistics',RACES),
+  I('Fill water bottles','Race Logistics',RACES),
+  I('Charge phone','Race Logistics',RACES),
+  I('Clip finger + toe nails (don\u2019t rip wetsuit)','Race Logistics',RACES),
+  I('Vaseline on chafe points / under biceps / feet','Race Logistics',RACES),
+  I('Tums before start (nerves)','Race Logistics',RACES),
+  I('Dry clothes + towel for after race','Race Logistics',RACES),
+  I('Money / credit card','Race Logistics',RACES),
+  I('Text when done','Race Logistics',RACES),
+
+  /* ---- CLOTHES ---- */
+  I('Sweatshirt for morning','Clothes',ALL),
+  I('Socks + T-shirts','Clothes',ALL),
+  I('Underwear','Clothes',ALL),
+  I('Arm warmers','Clothes',ALL),
+  I('Neck warmer','Clothes',ALL),
+  I('Gloves + hat if cold','Clothes',ALL),
+  I('Sweatpants','Clothes',ALL),
+  I('Rain jacket','Clothes',ALL),
+  I('Casual clothes + sneakers','Clothes',ALL),
+
+  /* ---- HOUSEHOLD ---- */
+  I('Chargers: watch, bike computer, phone','Household',ALL),
+  I('Rice cooker','Household',ALL),
+  I('Knife, fork, spoon, bowl, plate','Household',ALL),
+  I('Napkins','Household',ALL),
+  I('Shower bag','Household',ALL),
+  I('Coffee + mug + kettle','Household',ALL),
+  I('Garbage / laundry bags','Household',ALL),
+
+  /* ---- LODGING (camps & overnight races) ---- */
+  I('Pillow','Lodging',['camp']),
+  I('Bed linens / blanket','Lodging',['camp']),
+  I('Fan','Lodging',['camp']),
+  I('Towels (2)','Lodging',['camp']),
+  I('Headlamp for reading','Lodging',['camp']),
+  I('Toiletries: toothbrush, shampoo, shaving, hair','Lodging',ALL),
+  I('Night guard','Lodging',ALL),
+  I('Earplugs / ear protection for hotel','Lodging',ALL),
+
+  /* ---- MISC ---- */
+  I('Tums','Misc',ALL),
+  I('Motrin / Advil','Misc',ALL),
+  I('Headphones (charged)','Misc',[...ALL,'run']),
+  I('Reading glasses','Misc',ALL),
+  I('Water bottles','Misc',[...ALL,'swim','bike','run']),
+  I('Sunscreen','Misc',[...ALL,'bike','run']),
+  I('Bug spray','Misc',['camp']),
+  I('Band-aids','Misc',ALL),
+  I('Back gel / rolling stick','Misc',ALL),
+  I('Backpack / race bag','Misc',ALL),
+];
+
+/* =====================================================================
+   STATE & PERSISTENCE  (localStorage — survives reloads on this device)
+===================================================================== */
+const KEY = 'wpp-packlist-v1';
+const STATES = ['', 'packed', 'am', 'na'];   // tap cycles through these
+
+let store = load();
+function load(){
+  try{
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if(s && typeof s==='object') return Object.assign({statuses:{},custom:[],removed:[],activeEvent:'tri',collapsed:{}}, s);
+  }catch(e){}
+  return {statuses:{},custom:[],removed:[],activeEvent:'tri',collapsed:{}};
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(store)); }
+
+function allItems(){ return DEFAULT_ITEMS.concat(store.custom); }
+function visibleItems(ev){
+  return allItems().filter(it => it.ev.includes(ev) && !store.removed.includes(it.id));
+}
+function getState(id){ return (store.statuses[store.activeEvent]||{})[id] || ''; }
+function setState(id, st){
+  if(!store.statuses[store.activeEvent]) store.statuses[store.activeEvent] = {};
+  if(st) store.statuses[store.activeEvent][id] = st;
+  else delete store.statuses[store.activeEvent][id];
+  save();
+}
+
+/* =====================================================================
+   RENDER
+===================================================================== */
+const main = document.getElementById('main');
+const tabsEl = document.getElementById('tabs');
+
+function renderTabs(){
+  tabsEl.innerHTML = '';
+  EVENTS.forEach(ev=>{
+    const b = document.createElement('button');
+    b.className = 'tab' + (ev.key===store.activeEvent?' active':'');
+    b.textContent = ev.label;
+    b.onclick = ()=>{ store.activeEvent = ev.key; save(); render(); window.scrollTo(0,0); };
+    tabsEl.appendChild(b);
+  });
+}
+
+function renderProgress(){
+  const items = visibleItems(store.activeEvent);
+  const active = items.filter(it=>getState(it.id)!=='na');
+  const done = active.filter(it=>{const s=getState(it.id); return s==='packed'||s==='am';}).length;
+  document.getElementById('progress-label').textContent = done + ' / ' + active.length;
+  const fill = document.getElementById('progress-fill');
+  const pct = active.length ? (done/active.length*100) : 0;
+  fill.style.width = pct + '%';
+  fill.classList.toggle('done', pct===100 && active.length>0);
+}
+
+function render(){
+  renderTabs();
+  main.innerHTML = '';
+  const items = visibleItems(store.activeEvent);
+
+  CATEGORIES.forEach(cat=>{
+    const catItems = items.filter(it=>it.cat===cat);
+    if(!catItems.length && !document.body.classList.contains('editing')) return;
+
+    const sec = document.createElement('section');
+    sec.className = 'cat' + (store.collapsed[store.activeEvent+':'+cat] ? ' collapsed' : '');
+
+    /* header */
+    const head = document.createElement('div');
+    head.className = 'cat-head';
+    const activeCt = catItems.filter(it=>getState(it.id)!=='na');
+    const doneCt = activeCt.filter(it=>{const s=getState(it.id);return s==='packed'||s==='am';}).length;
+    head.innerHTML = '<h2>'+cat+'</h2>'+
+      '<div class="cat-meta"><span class="cat-count mono'+(activeCt.length&&doneCt===activeCt.length?' complete':'')+'">'+doneCt+'/'+activeCt.length+'</span>'+
+      '<svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg></div>';
+    head.onclick = ()=>{
+      const k = store.activeEvent+':'+cat;
+      store.collapsed[k] = !store.collapsed[k]; save();
+      sec.classList.toggle('collapsed');
+    };
+    sec.appendChild(head);
+
+    /* items */
+    const list = document.createElement('div');
+    list.className = 'items';
+    catItems.forEach(it=>{
+      const row = document.createElement('div');
+      row.className = 'item';
+      row.dataset.state = getState(it.id);
+      row.innerHTML =
+        '<div class="state">'+stateGlyph(getState(it.id))+'</div>'+
+        '<div class="item-name">'+esc(it.name)+(getState(it.id)==='am'?' <span class="am-tag">PACK IN AM</span>':'')+'</div>'+
+        '<button class="del-btn">Remove</button>';
+      row.onclick = (e)=>{
+        if(e.target.classList.contains('del-btn')){ removeItem(it); return; }
+        if(document.body.classList.contains('editing')) return;
+        const next = STATES[(STATES.indexOf(getState(it.id))+1)%STATES.length];
+        setState(it.id, next);
+        row.dataset.state = next;
+        row.querySelector('.state').innerHTML = stateGlyph(next);
+        const nm = row.querySelector('.item-name');
+        nm.innerHTML = esc(it.name)+(next==='am'?' <span class="am-tag">PACK IN AM</span>':'');
+        renderProgress(); refreshCatCount(sec, cat);
+      };
+      list.appendChild(row);
+    });
+    if(!catItems.length){
+      const note = document.createElement('div');
+      note.className = 'empty-note';
+      note.textContent = 'No items in this category for this event — add one below.';
+      list.appendChild(note);
+    }
+    sec.appendChild(list);
+
+    /* add row (edit mode) */
+    const add = document.createElement('div');
+    add.className = 'add-row';
+    const inp = document.createElement('input');
+    inp.placeholder = 'Add item to '+cat+'…';
+    const btn = document.createElement('button');
+    btn.textContent = 'Add';
+    btn.onclick = ()=>{
+      const name = inp.value.trim();
+      if(!name) return;
+      store.custom.push({id:'c'+Date.now(), name, cat, ev:[store.activeEvent]});
+      save(); render(); toast('Added to '+cat);
+    };
+    inp.addEventListener('keydown',e=>{ if(e.key==='Enter') btn.click(); });
+    add.appendChild(inp); add.appendChild(btn);
+    sec.appendChild(add);
+
+    main.appendChild(sec);
+  });
+  renderProgress();
+}
+
+function refreshCatCount(sec, cat){
+  const items = visibleItems(store.activeEvent).filter(it=>it.cat===cat);
+  const act = items.filter(it=>getState(it.id)!=='na');
+  const done = act.filter(it=>{const s=getState(it.id);return s==='packed'||s==='am';}).length;
+  const el = sec.querySelector('.cat-count');
+  el.textContent = done+'/'+act.length;
+  el.classList.toggle('complete', act.length>0 && done===act.length);
+}
+
+function stateGlyph(st){
+  if(st==='packed') return '✓';
+  if(st==='am') return 'AM';
+  if(st==='na') return '—';
+  return '';
+}
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+/* =====================================================================
+   ACTIONS
+===================================================================== */
+function removeItem(it){
+  if(!confirm('Remove "'+it.name+'" from your lists?')) return;
+  if(it.id[0]==='c') store.custom = store.custom.filter(c=>c.id!==it.id);
+  else store.removed.push(it.id);
+  save(); render(); toast('Removed');
+}
+
+document.getElementById('edit-btn').onclick = ()=>{
+  document.body.classList.toggle('editing');
+  document.getElementById('edit-btn').textContent =
+    document.body.classList.contains('editing') ? 'Done editing' : 'Edit items';
+  render();
+};
+
+document.getElementById('restore-btn').onclick = ()=>{
+  if(!store.removed.length){ toast('Nothing has been removed'); return; }
+  if(confirm('Restore all '+store.removed.length+' removed item(s)?')){
+    store.removed = []; save(); render(); toast('All items restored');
+  }
+};
+
+document.getElementById('reset-btn').onclick = ()=>{
+  const ev = EVENTS.find(e=>e.key===store.activeEvent).label;
+  if(confirm('New trip: clear all checkmarks on the '+ev+' list? Your items stay — only the checks reset.')){
+    store.statuses[store.activeEvent] = {}; save(); render(); toast(ev+' list reset');
+  }
+};
+
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+render();
+</script>
+</body>
+</html>
